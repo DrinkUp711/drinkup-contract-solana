@@ -23,6 +23,7 @@ pub mod drink_challenge_task {
             first_owner.bump = *ctx.bumps.get("first_owner").unwrap();
         } else {
             // TODO: check - if the first_owner is initialized, then first_owner.owner should equal to ctx.accounts.owner.key()
+            require_eq!(first_owner.owner, ctx.accounts.owner.key(), DrinkChallengeTaskError::ChallengeOwnerError);
         }
 
         // if first_owner.nft_mint == *ctx.accounts.system_program.key {
@@ -36,6 +37,8 @@ pub mod drink_challenge_task {
         if challenge_nft_list.owner == *ctx.accounts.system_program.key {
             challenge_nft_list.owner = ctx.accounts.owner.key();
             challenge_nft_list.bump = *ctx.bumps.get("challenge_nft_list").unwrap();
+        } else {
+            require_eq!(challenge_nft_list.owner, ctx.accounts.owner.key(), DrinkChallengeTaskError::ChallengeOwnerError);
         }
 
         // TODO: check if nft_mint exists
@@ -44,6 +47,8 @@ pub mod drink_challenge_task {
             nft_mint: ctx.accounts.nft_mint.key(),
             challenge_time: clock.unix_timestamp,
         });
+
+        // TODO: mint DST
 
         Ok(())
     }
@@ -157,4 +162,10 @@ impl ChallengeNFTList {
     // https://book.anchor-lang.com/anchor_references/space.html
     // max challenge nft list length is 10
     const LEN: usize = 8 + 32 + (4 + 10 * (32 + 32 + 8)) + 1;
+}
+
+#[error_code]
+pub enum DrinkChallengeTaskError {
+    #[msg("challenge owner should be the same as before")]
+    ChallengeOwnerError
 }
