@@ -22,7 +22,7 @@ pub mod drink_challenge_task {
             first_owner.challenge_time = clock.unix_timestamp;
             first_owner.bump = *ctx.bumps.get("first_owner").unwrap();
         } else {
-            // TODO: check - if the first_owner is initialized, then first_owner.owner should equal to ctx.accounts.owner.key()
+            // if the first_owner is initialized, then first_owner.owner should equal to ctx.accounts.owner.key()
             require_eq!(first_owner.owner, ctx.accounts.owner.key(), DrinkChallengeTaskError::ChallengeOwnerError);
         }
 
@@ -41,7 +41,10 @@ pub mod drink_challenge_task {
             require_eq!(challenge_nft_list.owner, ctx.accounts.owner.key(), DrinkChallengeTaskError::ChallengeOwnerError);
         }
 
-        // TODO: check if nft_mint exists
+        // check if nft_mint exists
+        let founded_index = challenge_nft_list.nft_list.iter().position(|&x| x.nft_mint == ctx.accounts.nft_mint.key());
+        require_eq!(founded_index.is_none(), true, DrinkChallengeTaskError::NFTMintExistError);
+
         challenge_nft_list.nft_list.push(ChallengeNFT {
             holder: ctx.accounts.holder.key(),
             nft_mint: ctx.accounts.nft_mint.key(),
@@ -167,5 +170,7 @@ impl ChallengeNFTList {
 #[error_code]
 pub enum DrinkChallengeTaskError {
     #[msg("challenge owner should be the same as before")]
-    ChallengeOwnerError
+    ChallengeOwnerError,
+    #[msg("nft mint already exists")]
+    NFTMintExistError,
 }
