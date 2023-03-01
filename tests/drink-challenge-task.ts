@@ -75,23 +75,37 @@ describe("drink-challenge-task", () => {
     );
     console.log("result-challengeNftList", challengeNftList);
 
+    // await program.methods
+    //   .startChallenge()
+    //   .accounts({
+    //     owner: provider.wallet.publicKey,
+    //     nftMint: nft,
+    //     holder: holderATA,
+    //     firstOwner: firstOwnerPDA,
+    //     challengeNftList: challengeNftListPDA,
+    //   })
+    //   .rpc();
+    //
+    // firstOwner = await program.account.firstOwner.fetch(firstOwnerPDA);
+    // console.log("result-firstOwner-2", firstOwner);
+    //
+    // challengeNftList = await program.account.challengeNftList.fetch(
+    //   challengeNftListPDA
+    // );
+    // console.log("result-challengeNftList-2", challengeNftList);
+
     await program.methods
-      .startChallenge()
+      .endChallenge()
       .accounts({
         owner: provider.wallet.publicKey,
         nftMint: nft,
         holder: holderATA,
-        firstOwner: firstOwnerPDA,
         challengeNftList: challengeNftListPDA,
       })
       .rpc();
-
-    firstOwner = await program.account.firstOwner.fetch(firstOwnerPDA);
-    console.log("result-firstOwner-2", firstOwner);
-
     challengeNftList = await program.account.challengeNftList.fetch(
       challengeNftListPDA
     );
-    console.log("result-challengeNftList-2", challengeNftList);
+    console.log("result-challengeNftList-end", challengeNftList);
   });
 });

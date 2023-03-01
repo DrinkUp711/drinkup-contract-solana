@@ -53,11 +53,28 @@ pub mod drink_challenge_task {
 
         // TODO: mint DST
 
+        // TODO: transfer NFT or set NFT authority
+
         Ok(())
     }
 
     pub fn end_challenge(ctx: Context<EndChallenge>) -> Result<()> {
-        // TODO: end_challenge
+        let challenge_nft_list = &mut ctx.accounts.challenge_nft_list;
+        require_eq!(challenge_nft_list.owner, ctx.accounts.owner.key(), DrinkChallengeTaskError::ChallengeOwnerError);
+
+        let founded_index = challenge_nft_list.nft_list.iter().position(|&x| x.nft_mint == ctx.accounts.nft_mint.key());
+        require_eq!(founded_index.is_some(), true, DrinkChallengeTaskError::NFTMintNotExistError);
+
+        let nft_item = challenge_nft_list.nft_list.get(founded_index.unwrap());
+        require_eq!(nft_item.is_some(), true, DrinkChallengeTaskError::NFTMintNotExistError);
+
+        challenge_nft_list.nft_list.remove(founded_index.unwrap());
+
+        let check_index = challenge_nft_list.nft_list.iter().position(|&x| x.nft_mint == ctx.accounts.nft_mint.key());
+        require_eq!(check_index.is_none(), true, DrinkChallengeTaskError::NFTRemoveFailedError);
+
+        // TODO: transfer NFT or set NFT authority
+
         Ok(())
     }
 }
@@ -173,4 +190,8 @@ pub enum DrinkChallengeTaskError {
     ChallengeOwnerError,
     #[msg("nft mint already exists")]
     NFTMintExistError,
+    #[msg("nft mint not exists")]
+    NFTMintNotExistError,
+    #[msg("nft remove failed")]
+    NFTRemoveFailedError,
 }
