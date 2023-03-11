@@ -51,9 +51,7 @@ pub mod drink_challenge_task {
             challenge_time: clock.unix_timestamp,
         });
 
-        // TODO: mint DST
-
-        // TODO: transfer NFT or set NFT authority
+        // Because the mint authority of spl can only have one, move the mint DST(token) out this program
 
         Ok(())
     }
@@ -72,8 +70,6 @@ pub mod drink_challenge_task {
 
         let check_index = challenge_nft_list.nft_list.iter().position(|&x| x.nft_mint == ctx.accounts.nft_mint.key());
         require_eq!(check_index.is_none(), true, DrinkChallengeTaskError::NFTRemoveFailedError);
-
-        // TODO: transfer NFT or set NFT authority
 
         Ok(())
     }
